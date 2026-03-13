@@ -50,11 +50,18 @@ def get_serp_results(api_key, keyword, location, lang, site):
             break  # No more results available
         all_organic.extend(organic)
 
-    filtered_result = next((item for item in all_organic if site in item.get("link", "")), None)
+    # Find the matching result and calculate absolute position from index
+    filtered_index = None
+    filtered_result = None
+    for idx, item in enumerate(all_organic):
+        if site in item.get("link", ""):
+            filtered_index = idx + 1  # 1-based rank
+            filtered_result = item
+            break
 
     return {
         "Keyword": keyword,
-        "Position": filtered_result["position"] if filtered_result else "Not Found",
+        "Position": filtered_index if filtered_result else "Not Found",
         "URL": filtered_result["link"] if filtered_result else "N/A",
         "Top_100": all_organic
     }
