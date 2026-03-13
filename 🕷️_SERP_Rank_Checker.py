@@ -21,36 +21,46 @@ def get_serp_results(api_key, keyword, location, lang, site):
         "Content-Type": "application/json"
     }
 
-    payload = {
-        "q": keyword,
-        "location": location,
-        "gl": lang,
-        "hl": lang,
-        "num": 100  
-    }
+    all_organic = []
 
-    response = requests.post(url, headers=headers, json=payload)
+    # Paginate through 10 pages to collect up to 100 results
+    for page in range(1, 11):
+        payload = {
+            "q": keyword,
+            "location": location,
+            "gl": lang,
+            "hl": lang,
+            "num": 10,
+            "page": page
+        }
 
-    if response.status_code == 403:
-        st.error("🚨 Invalid API Key! Please check your Serper.dev API key.")
-        st.stop()
+        response = requests.post(url, headers=headers, json=payload)
 
-    if response.status_code != 200:
-        st.error(f"❌ Error: {response.status_code} - {response.text}")
-        st.stop()
+        if response.status_code == 403:
+            st.error("🚨 Invalid API Key! Please check your Serper.dev API key.")
+            st.stop()
 
-    result = response.json()
-    filtered_result = next((item for item in result.get("organic", []) if site in item.get("link", "")), None)
+        if response.status_code != 200:
+            st.error(f"❌ Error: {response.status_code} - {response.text}")
+            st.stop()
+
+        result = response.json()
+        organic = result.get("organic", [])
+        if not organic:
+            break  # No more results available
+        all_organic.extend(organic)
+
+    filtered_result = next((item for item in all_organic if site in item.get("link", "")), None)
 
     return {
         "Keyword": keyword,
         "Position": filtered_result["position"] if filtered_result else "Not Found",
         "URL": filtered_result["link"] if filtered_result else "N/A",
-        "Top_100": result.get("organic", [])  
+        "Top_100": all_organic
     }
 
-def fetch_top_10(results):
-    return results["Top_100"][:100]  
+def fetch_top_100(results):
+    return results["Top_100"][:100]
 
 # Streamlit UI
 st.set_page_config(page_title="SERP Rank Checker", layout="wide")
@@ -106,7 +116,7 @@ if submitted:
         for keyword in keyword_list:
             result = get_serp_results(api_key, keyword, full_location, lang.split(" - ")[0], site)
             results.append(result)
-            top_10_results[keyword] = fetch_top_10(result)
+            top_10_results[keyword] = fetch_top_100(result)
 
         df = pd.DataFrame(results).drop(columns=["Top_100"])
 
