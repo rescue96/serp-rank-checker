@@ -50,7 +50,7 @@ def get_serp_results(api_key, keyword, location, lang, site):
     }
 
 def fetch_top_10(results):
-    return results["Top_100"][:10]  
+    return results["Top_100"][:100]  
 
 # Streamlit UI
 st.set_page_config(page_title="SERP Rank Checker", layout="wide")
@@ -74,7 +74,7 @@ with st.form("serp_form"):
 
     selected_country = st.selectbox("Select Country", options=countries, index=countries.index("Indonesia"))
 
-    default_city = "Jakarta"
+    default_city = " "
     city_index = ALL_CITIES.index(default_city) if default_city in ALL_CITIES else 0
     selected_city = st.selectbox("Select City (Optional)", options=ALL_CITIES, index=city_index)
 
@@ -101,7 +101,7 @@ if submitted:
         top_10_results = {}
 
         # 🔥 Format lokasi: "City, Country" jika kota dipilih, jika tidak hanya negara
-        full_location = f"{selected_city}, {selected_country}"
+        full_location = f"{selected_country}"
 
         for keyword in keyword_list:
             result = get_serp_results(api_key, keyword, full_location, lang.split(" - ")[0], site)
