@@ -111,7 +111,7 @@ if submitted:
         df = pd.DataFrame(results).drop(columns=["Top_100"])
 
         # Buat Tabs untuk hasil
-        tab1, tab2 = st.tabs(["📊 SERP Table", "🔍 Top 10 Results"])
+        tab1, tab2 = st.tabs(["📊 SERP Table", "🔍 Top 100 Results"])
 
         with tab1:
             st.write("### 📊 SERP Results")
@@ -127,7 +127,7 @@ if submitted:
             )
 
         with tab2:
-            st.write("### 🔍 Top 10 Search Results for Each Keyword")
+            st.write("### 🔍 Top 100 Search Results for Each Keyword")
 
             for keyword, results in top_10_results.items():
                 with st.expander(f"{keyword}"):
