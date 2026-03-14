@@ -89,13 +89,13 @@ st.title(APP_INTRO_TEXT)
 with st.form("serp_form"):
     keywords = st.text_area("Keywords (one per line)", placeholder="Enter keywords here...")
 
-    selected_country = st.selectbox("Select Country", options=countries, index=countries.index("Indonesia"))
+    selected_country = st.selectbox("Select Country", options=countries, index=countries.index("United Kingdom"))
 
     default_city = " "
     city_index = ALL_CITIES.index(default_city) if default_city in ALL_CITIES else 0
     selected_city = st.selectbox("Select City (Optional)", options=ALL_CITIES, index=city_index)
 
-    lang = st.selectbox("Select Language", options=languages, index=languages.index("id - Indonesian"))
+    lang = st.selectbox("Select Language", options=languages, index=languages.index("en - English"))
     site = sanitize_domain(st.text_input("Domain (e.g., example.com)", placeholder="Enter domain to track"))
 
     submitted = st.form_submit_button("Check Rankings")
